@@ -156,5 +156,3 @@ def gera_caminho(arvore, nodo_final):
         lista_acoes.append(atual.acao)
         atual = atual.pai
     return lista_acoes.reverse()
-
-print(bfs("2_3541687"))
