@@ -10,8 +10,10 @@ class Nodo:
         :param acao:str, acao a partir do pai que leva a este nodo (None no caso do nó raiz)
         :param custo:int, custo do caminho da raiz até este nó
         """
-        # substitua a linha abaixo pelo seu codigo
-        raise NotImplementedError
+        self.estado: str = estado
+        self.pai: Nodo = pai
+        self.acao: str = acao
+        self.custo: int = custo
 
 
 def sucessor(estado):
@@ -22,8 +24,25 @@ def sucessor(estado):
     :param estado:
     :return:
     """
-    # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    lista_possiveis: [(str, str)] = []
+    pos = estado.find('_')
+    if pos <= 5:
+        novo_estado = list(estado)
+        novo_estado[pos], novo_estado[pos+3] = novo_estado[pos+3], novo_estado[pos]
+        lista_possiveis.append(('abaixo',''.join(novo_estado)))
+    if pos >= 3:
+        novo_estado = list(estado)
+        novo_estado[pos], novo_estado[pos-3] = novo_estado[pos-3], novo_estado[pos]
+        lista_possiveis.append(('acima',''.join(novo_estado)))
+    if pos % 3 != 2:
+        novo_estado = list(estado)
+        novo_estado[pos], novo_estado[pos+1] = novo_estado[pos+1], novo_estado[pos]
+        lista_possiveis.append(('direita',''.join(novo_estado)))
+    if pos % 3 != 0:
+        novo_estado = list(estado)
+        novo_estado[pos], novo_estado[pos-1] = novo_estado[pos-1], novo_estado[pos]
+        lista_possiveis.append(('esquerda',''.join(novo_estado)))
+    return lista_possiveis
 
 
 def expande(nodo):
@@ -33,9 +52,11 @@ def expande(nodo):
     :param nodo: objeto da classe Nodo
     :return:
     """
-    # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
-
+    # Chama a função sucessor para o nodo
+    # Pega o retorno e faz um map (lembrar de converter pra list no final)
+    # map(lambda item: item[] expression, iterable)
+    filhos = map(lambda tup: Nodo(tup[1],nodo,tup[0],nodo.custo+1),sucessor(nodo.estado))
+    return list(filhos)
 
 def bfs(estado):
     """
