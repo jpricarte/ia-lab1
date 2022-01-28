@@ -1,3 +1,7 @@
+from collections import deque
+
+ESTADO_FINAL = "12345678_"
+
 class Nodo:
     """
     Implemente a classe Nodo com os atributos descritos na funcao init
@@ -22,7 +26,7 @@ def sucessor(estado):
     para cada ação possível no estado recebido.
     Tanto a ação quanto o estado atingido são strings também.
     :param estado:
-    :return:
+    :return: []
     """
     lista_possiveis: [(str, str)] = []
     pos = estado.find('_')
@@ -50,7 +54,7 @@ def expande(nodo):
     Recebe um nodo (objeto da classe Nodo) e retorna um iterable de nodos.
     Cada nodo do iterable é contém um estado sucessor do nó recebido.
     :param nodo: objeto da classe Nodo
-    :return:
+    :return: []
     """
     # Chama a função sucessor para o nodo
     # Pega o retorno e faz um map (lembrar de converter pra list no final)
@@ -65,10 +69,41 @@ def bfs(estado):
     estado recebido até o objetivo ("12345678_").
     Caso não haja solução a partir do estado recebido, retorna None
     :param estado: str
-    :return:
+    :return: []
     """
-    # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    # algoritmo :
+    '''
+    busca_grafo(estado_inicial)
+       X <- {}
+       F <- {s}
+       loop:
+         se F= vazio falha
+         v <- retira algum nó de F
+         se v é o objeto : retorna caminho s-v
+         se v não pertence a X :
+           insere v em x (como antecessor)
+           insere vizinho de v em F
+    '''
+    inicial = Nodo(estado, None, None, 0)
+    explorados: [Nodo] = []
+    fronteira: deque = deque([inicial])
+    while len(fronteira) != 0:
+        # Remove o elemento da fila
+        atual = fronteira.popleft()
+        # Se o estado for final, retorna a lista de movimentos
+        if atual.estado == ESTADO_FINAL:
+            return gera_caminho(explorados, atual)
+        # Se o estado ainda não havia sido explorado
+        if not any(atual.estado in e.estado for e in explorados):
+            # Insere o estado em explorados
+            explorados.append(atual)
+            # Para cada possivel movimento (até 4)
+            for nodo in expande(atual):
+                # Se o estado ainda não foi explorado, adiciona na fronteira
+                if not any(nodo.estado in e.estado for e in explorados):
+                    fronteira.append(nodo)
+    # Se sair do laço é porque não tem caminho
+    return []
 
 
 def dfs(estado):
@@ -80,10 +115,13 @@ def dfs(estado):
     :param estado: str
     :return:
     """
+    # Pilha 
     # substituir a linha abaixo pelo seu codigo
     raise NotImplementedError
 
 
+
+#fila de prioridades - min heap
 def astar_hamming(estado):
     """
     Recebe um estado (string), executa a busca A* com h(n) = soma das distâncias de Hamming e
@@ -108,3 +146,15 @@ def astar_manhattan(estado):
     """
     # substituir a linha abaixo pelo seu codigo
     raise NotImplementedError
+
+
+
+def gera_caminho(arvore, nodo_final):
+    atual = nodo_final
+    lista_acoes = []
+    while atual.pai != None:
+        lista_acoes.append(atual.acao)
+        atual = atual.pai
+    return lista_acoes.reverse()
+
+print(bfs("2_3541687"))
