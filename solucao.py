@@ -1,5 +1,10 @@
+import abc
+from dataclasses import dataclass, field
+from typing import Any
 from collections import deque
 import heapq
+
+from pyrsistent import *
 
 ESTADO_FINAL = "12345678_"
 
@@ -229,25 +234,77 @@ def ondeEsta(estado, peca):
 def ondeDeveriaEstar(peca):
     return peca-1
 
-class Fronteira:
-    def __init__(self, heuristic):
-        self.heuristic = heuristic  # a função heuristica deve ser passada como parametro
+class Fronteira(metaclass=abc.ABCMeta):
+    def __init__(self):
+
         self.nodes = []  # a fila de prioridades do nodos
 
-    
+    @abc.abstractmethod
+    def heuristic(self, estado):
+        pass
+
     def inserir(self, nodo: Nodo):
-        heapq.heappush(
-                self.nodes, (nodo.custo + self.heuristic(nodo.estado), nodo))
+        wrapper = PrioritizedItem(
+            nodo.custo + self.heuristic(nodo.estado), nodo)
+        heapq.heappush(self.nodes, wrapper)
 
-    def inserir_lista(self, listaNodos: [Nodo]):
-        for nodo in listaNodos: 
-            heapq.heappush(
-                self.nodes, (nodo.custo + self.heuristic(nodo.estado), nodo))
+    def inserir_lista(self, listaNodos):
+        for nodo in listaNodos:
+            self.inserir(nodo)
 
-    
     def len(self):
         return len(self.nodes)
 
-
     def retirar(self):
-        return heapq.heappop(self.nodes)[1]
+        wrapper: PrioritizedItem = heapq.heappop(self.nodes)
+        nodo = wrapper.item
+        del wrapper
+        return nodo
+
+
+# @dataclass(order=True)
+class PrioritizedItem:
+    def __init__(self, heuristica, nodo):
+        self.priority = heuristica
+        self.item = nodo
+
+    def __del__(self):
+        return self.item
+
+    def __lt__(self, other):
+        return self.priority < other.priority
+
+
+# @Fronteira.register()
+class FronteiraHamming(Fronteira):
+    def __init__(self):
+        self.nodes = []
+        super()
+
+    def heuristic(self, estado):
+        foraLugar = 0
+        for peca in range(1, 9):
+            if ondeEsta(estado, peca) != ondeDeveriaEstar(peca):
+                foraLugar = foraLugar + 1
+        return foraLugar
+
+# @Fronteira.register()
+
+
+class FronteiraManhattan(Fronteira):
+    def __init__(self):
+        self.nodes = []
+        super()
+
+    def heuristic(self, estado):
+        distAcumulada = 0
+        for peca in range(1, 9):
+            distAcumulada = distAcumulada + \
+                self.manhattanDistPeca(estado, peca)
+        return distAcumulada
+
+    def manhattanDistPeca(self, estado, peca):
+        esta = ondeEsta(estado, peca)
+        deveriaEstar = ondeDeveriaEstar(peca)
+        return abs(esta//3 - deveriaEstar//3) + abs(esta % 3 - deveriaEstar % 3)
+
