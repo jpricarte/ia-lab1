@@ -179,18 +179,20 @@ def astar_hamming(estado):
     :return:
     """
     inicial = Nodo(estado, None, None, 0)
-    explorados: [Nodo] = []
-    fronteira: deque = Fronteira(hammingDist)
+    explorados = []
+    fronteira = FronteiraHamming()
     fronteira.inserir(inicial)
     while fronteira.len() != 0:
         atual = fronteira.retirar()  # Remove o elemento da fila
-        if atual.estado == ESTADO_FINAL: # Se o estado for final, retorna a lista de movimentos
-            return gera_caminho(atual)      
-            
-        if not estadoEstaLista(atual, explorados):  # Se o estado ainda não havia sido explorado
-            explorados.append(atual) # Insere o estado em explorados
+        if atual.estado == ESTADO_FINAL:  # Se o estado for final, retorna a lista de movimentos
+            print(str(len(explorados)) + "nodos explorados")
+            return gera_caminho(atual)
+
+        # Se o estado ainda não havia sido explorado
+        if not estadoEstaLista(atual, explorados):
+            explorados.append(atual)  # Insere o estado em explorados
             fronteira.inserir_lista(expande(atual))
-    return None # Se sair do laço é porque não tem caminho
+    return None  # Se sair do laço é porque não tem caminho
 
 
 def hammingDist(estado):
@@ -211,7 +213,21 @@ def astar_manhattan(estado):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    inicial = Nodo(estado, None, None, 0)
+    explorados = []
+    fronteira = FronteiraManhattan()
+    fronteira.inserir(inicial)
+    while fronteira.len() != 0:
+        atual = fronteira.retirar()  # Remove o elemento da fila
+        if atual.estado == ESTADO_FINAL:  # Se o estado for final, retorna a lista de movimentos
+            #print(str(len(explorados)) + "nodos explorados")
+            return gera_caminho(atual)
+
+        # Se o estado ainda não havia sido explorado
+        if not estadoEstaLista(atual, explorados):
+            explorados.append(atual)  # Insere o estado em explorados
+            fronteira.inserir_lista(expande(atual))
+    return None  # Se sair do laço é porque não tem caminho
 
 def manhattanDistTotal(estado):
     distAcumulada = 0
