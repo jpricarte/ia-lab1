@@ -41,13 +41,12 @@ class TestaSolucao(unittest.TestCase):
         :return:
         """
         # no estado 2_3541687, a solucao otima tem 23 movimentos.
-        # self.assertEqual(23, len(solucao.bfs("2_3541687")))
+        self.assertEqual(23, len(solucao.bfs("2_3541687")))
         print("Atencao! O BFS passar nesse teste apenas significa que a lista retornada tem o "
               "numero correto de elementos. Nao verificamos se as acoes levam para a solucao!")
 
         # nao ha solucao a partir do estado 185423_67
-        # self.assertIsNone(solucao.bfs("185423_67"))
-        self.assertIsNone(solucao.bfs("111111_11"))
+        self.assertIsNone(solucao.bfs("185423_67"))
 
     def test_astar_hamming(self):
         """
@@ -83,7 +82,7 @@ class TestaSolucao(unittest.TestCase):
         :return:
         """
         # nao ha solucao a partir do estado 185423_67
-        # self.assertEqual(None, solucao.dfs("185423_67"))
+        self.assertEqual(None, solucao.dfs("185423_67"))
     
     def test_action_order(self):
         """
