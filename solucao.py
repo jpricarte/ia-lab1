@@ -2,6 +2,8 @@ import abc  # Para classe abstrata
 from collections import deque
 import heapq
 
+from pyrsistent import *
+
 ESTADO_FINAL = "12345678_"
 
 
@@ -288,8 +290,6 @@ class FronteiraManhattan(Fronteira):
         esta = ondeEsta(estado, peca)
         deveriaEstar = ondeDeveriaEstar(peca)
         return abs(esta//3 - deveriaEstar//3) + abs(esta % 3 - deveriaEstar % 3)
-
-
 def printEstado(estado):
     linha1 = estado[0:3]
     linha2 = estado[3:6]
